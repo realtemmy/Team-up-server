@@ -1,0 +1,23 @@
+{
+  "name": "team-up",
+  "version": "1.0.0",
+  "description": "A web app that allows users collaborate together on projects ideas",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "Realtemmy",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.1",
+    "nodemon": "^3.1.3",
+    "slugify": "^1.6.6",
+    "validator": "^13.12.0"
+  }
+}
