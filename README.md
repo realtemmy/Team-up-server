@@ -13,3 +13,5 @@
 * Real time chat connection
 * Uploading of images, videos and files
 * Create and model relationships
+
+## Completed features

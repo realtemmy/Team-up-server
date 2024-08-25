@@ -2,10 +2,17 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 
+exports.getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find();
+  res.status(200).json({
+    status: "success",
+    data: users,
+  });
+});
+
 exports.getAllOtherUsers = asyncHandler(async (req, res, next) => {
   // Or maybe find a way to get recent conversations
-  // const users = await User.find({ _id: { $ne: req.user._id } }); //remove password maybe with select("-password")
-  const users = await User.find();
+  const users = await User.find({ _id: { $ne: req.user._id } }).select("email");
   res.status(200).json({
     status: "success",
     data: users,
