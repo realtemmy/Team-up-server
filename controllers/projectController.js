@@ -1,7 +1,44 @@
 const asyncHandler = require("express-async-handler");
+const multer = require("multer");
 const Project = require("./../models/projectModel");
 const User = require("./../models/userModel");
 const AppError = require("./../utils/appError");
+const cloudinaryUploader = require("./../utils/cloudinary");
+
+// exports.uploadProjectPhoto = (req, res, next) => {
+//   new cloudinaryUploader(req, "projects", 1200, 1200, "image")
+//     .upload()
+//     .single("image");
+
+//   next();
+// };
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an image! Please upload only images.", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadProjectPhoto = upload.single("image");
+
+exports.uploadProjectToCloudinary = asyncHandler(async (req, res, next) => {
+  if (!req.file) {
+    return next(new AppError("No file uploaded!", 400));
+  }
+  const upload = new cloudinaryUploader(req, "projects", 1200, 1200, "image");
+  const url = await upload.uploadImage();
+  req.body.image = url;
+  next();
+});
 
 exports.createProject = asyncHandler(async (req, res, next) => {
   const { name, desc, skills, contributors, url } = req.body;
@@ -49,8 +86,6 @@ exports.canPerformActionOnproject = asyncHandler(async (req, res, next) => {
   if (!project) {
     return next(new AppError("No project with that ID found", 404));
   }
-
-  console.log(req.user._id, project.user);
 
   // Compare ObjectIDs correctly
   if (!req.user._id.equals(project.user)) {

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
@@ -19,7 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     photo: {
       type: String,
-      // default
+      validate: [validator.isMobilePhone, "Please provide a valid phone number"]
     },
     confirmPassword: {
       type: String,

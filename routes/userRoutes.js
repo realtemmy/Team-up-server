@@ -7,14 +7,22 @@ const router = express.Router();
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 
-router.get("/other-users", authController.protect, userController.getAllOtherUsers);
-
+router.get(
+  "/other-users",
+  authController.protect,
+  userController.getAllOtherUsers
+);
 
 router.route("/").get(userController.getAllUsers);
 
 router
   .route("/me")
   .get(authController.protect, userController.getCurrentUser)
-  .patch(authController.protect, userController.updateUserInfo);
+  .patch(
+    authController.protect,
+    userController.uploadUserPhoto,
+    userController.uploadProfileToCloudinary,
+    userController.updateUserInfo
+  );
 
 module.exports = router;

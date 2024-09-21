@@ -3,7 +3,10 @@ const validator = require("validator");
 
 const certificateSchema = new mongoose.Schema(
   {
-    name: { type: String },
+    name: {
+      type: String,
+      required: [true, "Certificate's name should not be empty"],
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -20,6 +23,7 @@ const certificateSchema = new mongoose.Schema(
     },
     issuedDate: {
       type: Date,
+      required: [true, "Please enter an issued date for the certificate"],
     },
   },
   {

@@ -7,7 +7,12 @@ const router = express.Router();
 router
   .route("/")
   .get(projectController.getAllprojects)
-  .post(authController.protect, projectController.createProject);
+  .post(
+    authController.protect,
+    projectController.uploadProjectPhoto,
+    projectController.uploadProjectToCloudinary,
+    projectController.createProject
+  );
 
 router
   .route("/:id")
@@ -15,6 +20,8 @@ router
   .patch(
     authController.protect,
     projectController.canPerformActionOnproject,
+    projectController.uploadProjectPhoto,
+    projectController.uploadProjectToCloudinary,
     projectController.updateProject
   )
   .delete(

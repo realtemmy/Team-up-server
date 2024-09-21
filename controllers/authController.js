@@ -4,7 +4,7 @@ const AppError = require("./../utils/appError");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 
-dotenv.config({path: "./../config.env"})
+dotenv.config({ path: "./../config.env" });
 
 exports.signup = asyncHandler(async (req, res) => {
   const newUser = await User.create({
@@ -28,7 +28,9 @@ exports.signup = asyncHandler(async (req, res) => {
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   // 1) Check if email exists in DB
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email })
+    .populate("certifications")
+    .populate("projects");
   if (!user) {
     return next(new AppError("No user with email found", 404));
   }
@@ -38,14 +40,14 @@ exports.login = asyncHandler(async (req, res, next) => {
   if (!matches) {
     return next(new AppError("Incorrect email and password combination", 401));
   }
-  
+
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
   res.status(200).json({
     status: "success",
     user,
-    token
+    token,
   });
 });
 
@@ -85,7 +87,7 @@ exports.googleSignUp = asyncHandler(async (req, res, next) => {
   });
 
   await user.save({ validateBeforeSave: false });
-  
+
   const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });

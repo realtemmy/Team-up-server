@@ -1,24 +1,41 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const projectSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, "A project must have a name"],
-      unique: true
+      unique: true,
     },
     desc: {
       type: String,
       required: [true, "A project must have a description"],
     },
     skills: [{ type: String }],
+    skillLevel: {
+      type: String,
+    },
+    summary: {
+      type: String,
+      required: [
+        true,
+        "A project should have a summary explaining the basic idea of the project",
+      ],
+    },
+    image: {
+      type: String,
+      required: [true, "Please select an image for your project."],
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "A project must have an owner"]
+      required: [true, "A project must have an owner"],
     },
     url: {
       type: String,
+      validate: [validator.isURL, "Please enter a valid URL"],
+      required: [true, "Please enter a URL"],
     },
     contributors: [{ type: mongoose.Schema.Types.ObjectId }],
   },
