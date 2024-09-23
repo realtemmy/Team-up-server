@@ -53,7 +53,7 @@
 - Get other users - /other-users
 - Get Logged user's info (Get) - /me
 - Edit users info (Patch) - /me
-- Update password - /update-password
-- Change profile photo - /change-profile-photo
-- Delete profile photo - /delete-profile-photo
+- Update password(Post) - /update-password
+- Change profile photo(Patch) - /change-profile-photo
+- Delete profile photo(delete) - /delete-profile-photo
 
