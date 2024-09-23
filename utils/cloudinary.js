@@ -45,8 +45,15 @@ class cloudinaryUploader {
     });
     return result.secure_url;
   }
-  deleteImage() {}
-//   updateImage() {}
+  async deleteImage() {
+    // Get publicId
+    await cloudinary.uploader.destroy("publicId")
+  }
+  async updateImage() {
+    // Delete current image if it exists
+    await this.deleteImage();
+
+  }
 }
 
 module.exports = cloudinaryUploader;

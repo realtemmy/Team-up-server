@@ -30,11 +30,20 @@ exports.uploadProfileToCloudinary = asyncHandler(async (req, res, next) => {
   if (!req.file) {
     return new AppError("No file uploaded!", 400);
   }
+  // Start by deleting the previous  image url, then upload the new one
   const upload = new cloudinaryUploader(req, "users", 1200, 1200, "image");
   const url = await upload.uploadImage();
   console.log("Url: ", url);
-  req.body.photo = url;
-  next();
+  // req.body.photo = url; // update only image
+  await User.findByIdAndUpdate(
+    req.user.id,
+    { photo: url },
+    { runValidators: true, new: true }
+  );
+  res.status(200).json({
+    status: "success",
+    data: url,
+  });
 });
 
 exports.getAllUsers = asyncHandler(async (req, res) => {
@@ -76,7 +85,7 @@ exports.updateUserInfo = asyncHandler(async (req, res, next) => {
 
   const updatedUser = await User.findByIdAndUpdate(
     req.user._id,
-    { name, email, bio, projects, education, certifications, phone },
+    { name, email, bio, phone },
     { new: true, runValidators: true }
   );
 
@@ -84,4 +93,8 @@ exports.updateUserInfo = asyncHandler(async (req, res, next) => {
     status: "message",
     data: updatedUser,
   });
+});
+
+exports.deleteProfilePhoto = asyncHandler(async (req, res, next) => {
+  const cloudinary = new cloudinaryUploader(req, )
 });

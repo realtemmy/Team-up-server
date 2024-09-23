@@ -6,6 +6,11 @@ const router = express.Router();
 
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
+router.post(
+  "/update-password",
+  authController.protect,
+  authController.updatepassword
+);
 
 router.get(
   "/other-users",
@@ -13,16 +18,20 @@ router.get(
   userController.getAllOtherUsers
 );
 
+router.patch(
+  "/change-profile-photo",
+  authController.protect,
+  userController.uploadUserPhoto,
+  userController.uploadProfileToCloudinary
+);
+
+router.delete("/delete-profile-photo", authController.protect, )
+
 router.route("/").get(userController.getAllUsers);
 
 router
   .route("/me")
   .get(authController.protect, userController.getCurrentUser)
-  .patch(
-    authController.protect,
-    userController.uploadUserPhoto,
-    userController.uploadProfileToCloudinary,
-    userController.updateUserInfo
-  );
+  .patch(authController.protect, userController.updateUserInfo);
 
 module.exports = router;

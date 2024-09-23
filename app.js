@@ -11,6 +11,9 @@ dotenv.config({ path: "./config.env" });
 app.use(cors());
 app.use(express.json());
 
+// password select false not working
+// validation after password update
+
 
 // =============== Routes ======================
 
