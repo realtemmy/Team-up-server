@@ -9,8 +9,6 @@ router
   .get(projectController.getAllprojects)
   .post(
     authController.protect,
-    projectController.uploadProjectPhoto,
-    projectController.uploadProjectToCloudinary,
     projectController.createProject
   );
 

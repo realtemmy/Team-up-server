@@ -29,8 +29,9 @@ exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   // 1) Check if email exists in DB
   const user = await User.findOne({ email })
-    .populate("certifications")
-    .populate("projects");
+    // .populate("certifications")
+    // .populate("projects")
+    .select("+password");
   if (!user) {
     return next(new AppError("No user with email found", 404));
   }
@@ -40,6 +41,8 @@ exports.login = asyncHandler(async (req, res, next) => {
   if (!matches) {
     return next(new AppError("Incorrect email and password combination", 401));
   }
+
+  user.password = undefined
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRES_IN,

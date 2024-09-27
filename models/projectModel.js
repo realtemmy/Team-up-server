@@ -18,14 +18,11 @@ const projectSchema = new mongoose.Schema(
     },
     summary: {
       type: String,
+      maxLength: [50, "Summary should be less than 50 characters"],
       required: [
         true,
         "A project should have a summary explaining the basic idea of the project",
       ],
-    },
-    image: {
-      type: String,
-      required: [true, "Please select an image for your project."],
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

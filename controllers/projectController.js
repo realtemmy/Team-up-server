@@ -41,7 +41,7 @@ exports.uploadProjectToCloudinary = asyncHandler(async (req, res, next) => {
 });
 
 exports.createProject = asyncHandler(async (req, res, next) => {
-  const { name, desc, skills, contributors, url } = req.body;
+  const { name, desc, skills, contributors, url, summary } = req.body;
   const user = await User.findById(req.user.id);
   if (!user) {
     return next(new AppError("User not found", 404));
@@ -50,9 +50,10 @@ exports.createProject = asyncHandler(async (req, res, next) => {
     name,
     contributors,
     desc,
-    skills,
+    skills,g
     url,
     user: req.user.id,
+    summary,
   });
   // Add project's Id to user
   user.projects.push(newProject._id);
