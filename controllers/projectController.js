@@ -41,7 +41,8 @@ exports.uploadProjectToCloudinary = asyncHandler(async (req, res, next) => {
 });
 
 exports.createProject = asyncHandler(async (req, res, next) => {
-  const { name, desc, skills, contributors, url, summary } = req.body;
+  const { name, desc, skills, contributors, repoUrl, liveUrl, summary, skillLevel, type } =
+    req.body;
   const user = await User.findById(req.user.id);
   if (!user) {
     return next(new AppError("User not found", 404));
@@ -50,10 +51,15 @@ exports.createProject = asyncHandler(async (req, res, next) => {
     name,
     contributors,
     desc,
-    skills,g
-    url,
+    skills,
+    type,
+    links: {
+      liveUrl,
+      repoUrl
+    },
     user: req.user.id,
     summary,
+    skillLevel,
   });
   // Add project's Id to user
   user.projects.push(newProject._id);
@@ -61,7 +67,7 @@ exports.createProject = asyncHandler(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
   res.status(201).json({
     status: "success",
-    data: newProject,
+    data: newProject._id,
   });
 });
 
@@ -74,7 +80,9 @@ exports.getProject = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllprojects = asyncHandler(async (req, res) => {
-  const projects = await Project.find();
+  const projects = await Project.find().select(
+    "name summary skills type status"
+  );
   res.status(200).json({
     status: "success",
     length: projects.length,
