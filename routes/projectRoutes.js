@@ -7,10 +7,9 @@ const router = express.Router();
 router
   .route("/")
   .get(projectController.getAllprojects)
-  .post(
-    authController.protect,
-    projectController.createProject
-  );
+  .post(authController.protect, projectController.createProject);
+
+router.get("/user", authController.protect, projectController.getAllUserProjects);
 
 router
   .route("/:id")
@@ -18,8 +17,8 @@ router
   .patch(
     authController.protect,
     projectController.canPerformActionOnproject,
-    projectController.uploadProjectPhoto,
-    projectController.uploadProjectToCloudinary,
+    // projectController.uploadProjectPhoto,
+    // projectController.uploadProjectToCloudinary,
     projectController.updateProject
   )
   .delete(
@@ -27,5 +26,22 @@ router
     projectController.canPerformActionOnproject,
     projectController.deleteProject
   );
+
+// router.get(
+//   "/user",
+//   authController.protect,
+//   projectController.getAllUserProjects
+// );
+
+router.patch(
+  "/:id/join-request",
+  authController.protect,
+  projectController.joinRequest
+);
+router.patch(
+  "/:id/join-manage",
+  authController.protect,
+  projectController.manageRequest
+);
 
 module.exports = router;

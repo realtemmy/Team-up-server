@@ -41,8 +41,17 @@ exports.uploadProjectToCloudinary = asyncHandler(async (req, res, next) => {
 });
 
 exports.createProject = asyncHandler(async (req, res, next) => {
-  const { name, desc, skills, contributors, repoUrl, liveUrl, summary, skillLevel, type } =
-    req.body;
+  const {
+    name,
+    desc,
+    skills,
+    contributors,
+    repoUrl,
+    liveUrl,
+    summary,
+    skillLevel,
+    type,
+  } = req.body;
   const user = await User.findById(req.user.id);
   if (!user) {
     return next(new AppError("User not found", 404));
@@ -55,7 +64,7 @@ exports.createProject = asyncHandler(async (req, res, next) => {
     type,
     links: {
       liveUrl,
-      repoUrl
+      repoUrl,
     },
     user: req.user.id,
     summary,
@@ -73,6 +82,9 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 
 exports.getProject = asyncHandler(async (req, res, next) => {
   const project = await Project.findById(req.params.id);
+  if (!project) {
+    return next(new AppError("No project with ID found.", 404));
+  }
   res.status(200).json({
     status: "success",
     data: project,
@@ -86,6 +98,20 @@ exports.getAllprojects = asyncHandler(async (req, res) => {
   res.status(200).json({
     status: "success",
     length: projects.length,
+    data: projects,
+  });
+});
+
+exports.getAllUserProjects = asyncHandler(async (req, res, next) => {
+  const userId = req.user._id;
+
+  // Check for where user is a contributor or the creator
+  const projects = await Project.find({
+    $or: [{ user: userId }, { contributors: userId }],
+  }).select("name slug");
+
+  res.status(200).json({
+    status: "success",
     data: projects,
   });
 });
@@ -122,5 +148,43 @@ exports.deleteProject = asyncHandler(async (req, res, next) => {
   res.status(204).json({
     status: "success",
     data: null,
+  });
+});
+
+exports.joinRequest = asyncHandler(async (req, res, next) => {
+  const userId = req.user._id;
+  const project = await Project.findById(req.params.id);
+  // Add user to request if not already present
+  if (!project.requests.some((request) => request.userId.equals(userId))) {
+    project.requests.push({ userId });
+    await project.save();
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Request sent successfully",
+  });
+});
+
+exports.manageRequest = asyncHandler(async (req, res, next) => {
+  const { userId, action } = req.body;
+  const project = await Project.findById(req.params.id);
+  //
+  const requestIndex = project.requests.findIndex((req) =>
+    req.userId.equals(userId)
+  );
+
+  if (requestIndex === -1) {
+    return next(new AppError("Request not found", 404));
+  }
+  if (action === "accept") {
+    project.contributors.push(userId);
+  }
+
+  project.requests.splice(requestIndex, 1);
+  await project.save();
+  res.status(200).json({
+    status: "success",
+    message: `User ${action}ed successfully`,
   });
 });

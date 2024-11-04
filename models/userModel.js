@@ -20,8 +20,6 @@ const userSchema = new mongoose.Schema(
     },
     photo: {
       type: String,
-      // default: 
-      // validate: [validator, "Please provide a valid phone number"]
     },
     confirmPassword: {
       type: String,

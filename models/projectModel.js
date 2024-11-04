@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const slugify = require("slugify");
 const validator = require("validator");
 
 const projectSchema = new mongoose.Schema(
@@ -42,7 +43,7 @@ const projectSchema = new mongoose.Schema(
       repoUrl: {
         type: String,
         validate: [validator.isURL, "Please enter a valid URL"],
-        required: [true, "Please enter a URL"]
+        required: [true, "Please enter a URL"],
       },
       liveUrl: {
         type: String,
@@ -50,11 +51,19 @@ const projectSchema = new mongoose.Schema(
         required: [true, "Please enter a URL"],
       },
     },
-
+    slug: {
+      type: String,
+    },
     contributors: [
       {
-        type: String,
-        validate: [validator.isEmail, "Please enter a valid email"],
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    requests: [
+      {
+        userId: { type: mongoose.Schema.Types.ObjectId },
+        requestedAt: { type: Date, default: Date.now },
       },
     ],
   },
@@ -62,6 +71,11 @@ const projectSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+projectSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
 
 const Project = mongoose.model("Project", projectSchema);
 
