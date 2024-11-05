@@ -20,11 +20,13 @@ app.use(express.json());
 const userRoutes = require("./routes/userRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const certificateRoutes = require("./routes/certificateRoutes");
+const postRoutes = require("./routes/postRoutes");
 
 
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/project", projectRoutes);
 app.use("/api/v1/certificate", certificateRoutes);
+app.use("/api/v1/post", postRoutes);
 
 
 // ================ All undefined routes ================= //
