@@ -31,7 +31,7 @@ exports.getPost = asyncHandler(async (req, res, next) => {
 
 exports.createPost = asyncHandler(async (req, res, next) => {
   await Post.create({
-    text: req.body.text,
+    post: req.body.post,
     userId: req.user._id,
   });
   res.status(201).json({
@@ -92,6 +92,8 @@ exports.commentOnPost = asyncHandler(async (req, res, next) => {
 });
 
 exports.deletePost = asyncHandler(async (req, res, next) => {
+  // Verify who's deleting post
+  // Delete all comments on post
   const post = await Post.findByIdAndDelete(req.params.id);
   if (!post) {
     return next(new AppError("No post with ID found.", 404));

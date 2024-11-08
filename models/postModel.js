@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema(
   {
-    text: {
+    post: {
       type: String,
       required: [true, "Post cannot be empty"],
     },

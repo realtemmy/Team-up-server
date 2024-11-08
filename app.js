@@ -21,12 +21,14 @@ const userRoutes = require("./routes/userRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const certificateRoutes = require("./routes/certificateRoutes");
 const postRoutes = require("./routes/postRoutes");
+const commentRoutes = require("./routes/commentRoutes");
 
 
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/project", projectRoutes);
 app.use("/api/v1/certificate", certificateRoutes);
-app.use("/api/v1/post", postRoutes);
+app.use("/api/v1/posts", postRoutes);
+app.use("/api/v1/comments", commentRoutes)
 
 
 // ================ All undefined routes ================= //
