@@ -4,7 +4,8 @@ const AppError = require("./../utils/appError");
 const Comment = require("./../models/commentModel");
 
 exports.getAllPosts = asyncHandler(async (req, res) => {
-  const posts = await Post.find();
+  // populate users name
+  const posts = await Post.find().populate("userId", "name");
   res.status(200).json({
     status: "success",
     data: posts,
