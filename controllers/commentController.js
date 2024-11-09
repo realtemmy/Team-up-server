@@ -97,11 +97,14 @@ exports.canPerformAction = asyncHandler(async (req, res, next) => {
 });
 
 exports.deleteComment = asyncHandler(async (req, res, next) => {
+  const { commentId } = req.params;
   // Remove Id from post
-  const comm = await Comment.findByIdAndDelete(req.params.commentId);
-  if (!comm) {
-    return next(new AppError("No comment with ID found", 404));
-  }
+  const comment = await Comment.findByIdAndDelete(commentId);
+
+  const post = await Post.findById({ comments: comment._id });
+  post.comments.filter((comment) => comment !== commentId);
+  post.save();
+
   res.status(204).json({
     status: "success",
     data: null,

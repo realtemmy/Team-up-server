@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Post = require("./../models/postModel");
 const AppError = require("./../utils/appError");
+const Comment = require("./../models/commentModel");
 
 exports.getAllPosts = asyncHandler(async (req, res) => {
   const posts = await Post.find();
@@ -72,23 +73,18 @@ exports.likePost = asyncHandler(async (req, res, next) => {
   if (!post) {
     return next(new AppError("No post with ID found", 404));
   }
-  
+
   res.status(200).json({
     status: "success",
   });
 });
 
-exports.commentOnPost = asyncHandler(async (req, res, next) => {
-  const comment = await Post.findByIdAndUpdate(
-    req.params.id,
-    {
-      comments: { message: req.body.message, userId: req.user_id },
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
+exports.canPerformAction = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.id);
+  if (!post.userId.equals(req.user._id)) {
+    return next(new AppError("Sorry, you cannot perform this action", 403));
+  }
+  next();
 });
 
 exports.deletePost = asyncHandler(async (req, res, next) => {
@@ -98,6 +94,13 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
   if (!post) {
     return next(new AppError("No post with ID found.", 404));
   }
+
+  // await Promise.all()
+  await Promise.all(
+    post.comments.map(
+      async (commentId) => await Comment.findByIdAndDelete(commentId)
+    )
+  );
 
   res.status(204).json({
     status: "success",
