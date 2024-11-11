@@ -24,6 +24,7 @@ const postSchema = new mongoose.Schema(
       },
     ],
     comments: [
+      // Maybe change to just comment count ?
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment",

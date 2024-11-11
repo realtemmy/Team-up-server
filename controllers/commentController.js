@@ -8,7 +8,7 @@ exports.getAllComments = asyncHandler(async (req, res) => {
   if (req.params.postId) {
     filter = { post: req.params.postId };
   }
-  const comments = await Comment.find(filter);
+  const comments = await Comment.find(filter).populate("userId", "name photo");
   res.status(200).json({
     status: "success",
     data: comments,
@@ -40,7 +40,10 @@ exports.createComment = asyncHandler(async (req, res, next) => {
 });
 
 exports.getComment = asyncHandler(async (req, res, next) => {
-  const comment = await Comment.findById(req.params.commentId);
+  const comment = await Comment.findById(req.params.commentId).populate(
+    "userId",
+    "name photo"
+  );
   if (!comment) {
     return next(new AppError("No comment with ID found", 404));
   }
