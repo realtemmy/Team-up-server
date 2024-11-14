@@ -23,6 +23,11 @@ const postSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    images: [
+      {
+        type: String,
+      },
+    ],
     comments: [
       // Maybe change to just comment count ?
       {

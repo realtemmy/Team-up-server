@@ -21,8 +21,11 @@ exports.createComment = asyncHandler(async (req, res, next) => {
   //   userId: req.user._id,
   //   message: req.body.message,
   // });
+  if (!postId) {
+    return next(new AppError("ID for post missing", 404));
+  }
   const comment = new Comment({
-    message: req.body.message,
+    comment: req.body.comment,
     post: postId,
     userId: req.user._id,
   });
@@ -30,9 +33,10 @@ exports.createComment = asyncHandler(async (req, res, next) => {
   if (!post) {
     return next(new AppError("No post found", 404));
   }
+  await comment.save();
   post.comments.push(comment._id);
-  post.save();
-  comment.save();
+  await post.save();
+
   res.status(201).json({
     status: "success",
     data: comment,
@@ -106,7 +110,7 @@ exports.deleteComment = asyncHandler(async (req, res, next) => {
 
   const post = await Post.findById({ comments: comment._id });
   post.comments.filter((comment) => comment !== commentId);
-  post.save();
+  await post.save();
 
   res.status(204).json({
     status: "success",

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema(
   {
-    message: {
+    comment: {
       type: String,
       required: [true, "Comment cannot be empty"],
     },

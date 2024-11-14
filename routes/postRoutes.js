@@ -14,7 +14,12 @@ router.patch("/:id/like", authController.protect, postController.likePost);
 router
   .route("/")
   .get(postController.getAllPosts)
-  .post(authController.protect, postController.createPost);
+  .post(
+    authController.protect,
+    postController.uploadImages,
+    postController.uploadToCloudinary,
+    postController.createPost
+  );
 
 router
   .route("/:id")
