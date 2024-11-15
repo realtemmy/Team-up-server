@@ -9,6 +9,8 @@ const router = express.Router();
 router.use("/:postId/comments", commentsRoutes);
 
 router.get("/me", authController.protect, postController.getUsersPosts);
+router.patch("/:postId/bookmark", authController.protect, postController.bookmarkPost);
+router.get("/bookmarks", authController.protect, postController.getBookmarks)
 router.patch("/:id/like", authController.protect, postController.likePost);
 
 router

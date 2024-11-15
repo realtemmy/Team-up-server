@@ -30,11 +30,20 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      validate: [validator.isMobilePhone, "Please provide a valid phone number"]
+      validate: [
+        validator.isMobilePhone,
+        "Please provide a valid phone number",
+      ],
     },
     projects: [
       {
         type: mongoose.Schema.ObjectId,
+        ref: "Project",
+      },
+    ],
+    bookmarks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Project",
       },
     ],
@@ -59,7 +68,7 @@ const userSchema = new mongoose.Schema(
         ref: "Certificate",
       },
     ],
-  },
+  }
   // {
   //   toJSON: { virtuals: true },
   //   toObject: { virtuals: true },

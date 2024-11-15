@@ -35,6 +35,12 @@ const postSchema = new mongoose.Schema(
         ref: "Comment",
       },
     ],
+    bookmarkedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,

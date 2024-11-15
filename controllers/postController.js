@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 const Post = require("./../models/postModel");
 const AppError = require("./../utils/appError");
 const Comment = require("./../models/commentModel");
+const User = require("../models/userModel");
 
 const multerStorage = multer.memoryStorage();
 
@@ -150,5 +151,56 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
   res.status(204).json({
     status: "success",
     data: null,
+  });
+});
+
+exports.getBookmarks = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user._id).select("bookmarks");
+  // postIds.map(async postId => await Post.findById(postId))
+  // Fetch the bookmarked posts in the IDs in the bookmarks array
+  const posts = await Post.find({ _id: { $in: user.bookmarks } });
+  res.status(200).json({
+    status: "success",
+    length: posts.length,
+    data: posts,
+  });
+});
+
+exports.bookmarkPost = asyncHandler(async (req, res, next) => {
+  const { postId } = req.params;
+
+  // Check if the post exists
+  const post = await Post.findById(postId);
+  if (!post) {
+    return next(new AppError("No post with the specified ID found", 404));
+  }
+
+  // Check if bookmark already exists for the user
+  const user = await User.findOne({
+    _id: req.user._id,
+    bookmarks: { $elemMatch: { $eq: postId } },
+  });
+
+  if (user) {
+    return next(new AppError("Post is already bookmarked", 400));
+  }
+  // Update both user and post in parallel
+  const userUpdate = User.findByIdAndUpdate(
+    req.user._id,
+    { $addToSet: { bookmarks: postId } },
+    { new: true }
+  );
+
+  const postUpdate = Post.findByIdAndUpdate(
+    postId,
+    { $addToSet: { bookmarkedBy: req.user._id } },
+    { new: true }
+  );
+
+  await Promise.all([userUpdate, postUpdate]);
+
+  res.status(200).json({
+    status: "success",
+    message: "Bookmarked successfully",
   });
 });
