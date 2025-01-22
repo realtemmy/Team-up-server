@@ -147,7 +147,6 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
       async (commentId) => await Comment.findByIdAndDelete(commentId)
     )
   );
-
   res.status(204).json({
     status: "success",
     data: null,

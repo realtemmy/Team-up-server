@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const messageSchema = new mongoose.Schema(
   {
-    senderId: {
+    sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    receiverId: {
+    receiver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
@@ -14,6 +14,22 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: [true, "Message to be send is required"],
     },
+    status: {
+      type: String,
+      enum: {
+        values: ["sent", "delivered", "read"],
+        message: "Status is either: sent, delivered, read",
+      },
+      default: "sent",
+    },
+    images: [
+      {
+        type: String,
+      },
+    ],
+    updatedTextAt: {
+      type: Date,
+    }
   },
   { timestamps: true }
 );
