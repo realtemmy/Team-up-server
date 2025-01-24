@@ -5,6 +5,7 @@ const Post = require("./../models/postModel");
 const AppError = require("./../utils/appError");
 const Comment = require("./../models/commentModel");
 const User = require("../models/userModel");
+const { create } = require("../models/conversationModel");
 
 const multerStorage = multer.memoryStorage();
 
@@ -49,7 +50,9 @@ exports.uploadToCloudinary = asyncHandler(async (req, res, next) => {
 
 exports.getAllPosts = asyncHandler(async (req, res) => {
   // populate users name
-  const posts = await Post.find().populate("userId", "name photo");
+  const posts = await Post.find()
+    .populate("userId", "name photo")
+    .sort({ createdAt: -1 });
   res.status(200).json({
     status: "success",
     data: posts,
@@ -57,7 +60,9 @@ exports.getAllPosts = asyncHandler(async (req, res) => {
 });
 
 exports.getUsersPosts = asyncHandler(async (req, res) => {
-  const posts = await Post.find({ userId: req.user._id });
+  const posts = await Post.find({ userId: req.user._id }).sort({
+    createdAt: -1,
+  });
   res.status(200).json({
     status: "success",
     data: posts,
@@ -104,25 +109,41 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
 });
 
 exports.likePost = asyncHandler(async (req, res, next) => {
-  const post = await Post.findByIdAndUpdate(
-    req.params.id,
-    {
-      $addToSet: { likedBy: req.user._id },
-      $inc: { likesCount: 1 },
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
+  // const post = await Post.findByIdAndUpdate(
+  //   req.params.id,
+  //   {
+  //     $addToSet: { likedBy: req.user._id },
+  //     $inc: { likesCount: 1 },
+  //   },
+  //   {
+  //     new: true,
+  //     runValidators: true,
+  //   }
+  // );
+const post = await Post.findById(req.params.id);
+
+if (!post) {
+  return next(new AppError("No post with ID found", 404));
+}
+
+if (post.likedBy.includes(req.user._id)) {
+  // User has already liked the post, so unlike it
+  post.likedBy = post.likedBy.filter(
+    (userId) => userId.toString() !== req.user._id.toString()
   );
+  post.likesCount -= 1;
+} else {
+  // User has not liked the post, so like it
+  post.likedBy.push(req.user._id);
+  post.likesCount += 1;
+}
 
-  if (!post) {
-    return next(new AppError("No post with ID found", 404));
-  }
+await post.save();
 
-  res.status(200).json({
-    status: "success",
-  });
+res.status(200).json({
+  status: "success",
+  data: post,
+});
 });
 
 exports.canPerformAction = asyncHandler(async (req, res, next) => {

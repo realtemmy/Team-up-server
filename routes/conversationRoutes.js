@@ -5,6 +5,7 @@ const conversationController = require("../controllers/conversationController");
 const router = express.Router();
 
 router.get("/all", conversationController.getAllConversations);
+router.get("/last", authController.protect, conversationController.getLastConversations);
 
 router
   .route("/")
