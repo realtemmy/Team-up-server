@@ -55,9 +55,32 @@ exports.getAllUsers = asyncHandler(async (req, res) => {
   });
 });
 
+exports.searchUserByNameAndEmail = asyncHandler(async (req, res, next) => {
+  // Search value in both email and name
+  const { search } = req.query;
+
+  if(!search) {
+    return next(new AppError("Please provide a search value", 400));
+  }
+const users = await User.find({
+  $or: [
+    { name: { $regex: search, $options: "i" } },
+    { email: { $regex: search, $options: "i" } },
+  ],
+  _id: { $ne: req.user._id },
+}).select("name email photo");
+
+  res.status(200).json({
+    status: "success",
+    data: users,
+  });
+});
+
 exports.getAllOtherUsers = asyncHandler(async (req, res, next) => {
   // Or maybe find a way to get recent conversations
-  const users = await User.find({ _id: { $ne: req.user._id } }).select("email");
+  const users = await User.find({ _id: { $ne: req.user._id } }).select(
+    "email name photo"
+  );
   res.status(200).json({
     status: "success",
     data: users,
@@ -65,9 +88,7 @@ exports.getAllOtherUsers = asyncHandler(async (req, res, next) => {
 });
 
 exports.getCurrentUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id)
-    .populate("projects")
-    .populate("certifications");
+  const user = await User.findById(req.user._id);
   res.status(200).json({
     status: "success",
     data: user,
@@ -97,5 +118,5 @@ exports.updateUserInfo = asyncHandler(async (req, res, next) => {
 });
 
 exports.deleteProfilePhoto = asyncHandler(async (req, res, next) => {
-  const cloudinary = new cloudinaryUploader(req, )
+  const cloudinary = new cloudinaryUploader(req);
 });

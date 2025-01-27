@@ -9,11 +9,13 @@ router.get("/last", authController.protect, conversationController.getLastConver
 
 router
   .route("/")
-  .get(authController.protect, conversationController.getConversation);
+  .get(authController.protect, conversationController.getUserConversations);
 router.get(
   "/:id/lastMessage",
   authController.protect,
   conversationController.getLastMessageFromConversation
 );
+
+router.route("/:id").get(authController.protect, conversationController.getConversation);
 
 module.exports = router;

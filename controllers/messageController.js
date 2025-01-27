@@ -36,13 +36,23 @@ exports.sendMessage = asyncHandler(async (req, res, next) => {
   });
 });
 
+// exports.getAllMessagesInConversation = asyncHandler(async(req, res, next) => {
+//   const { conversationId } = req.params;
+//   const messages = await Message.find({ conversation: conversationId });
+
+//   res.status(200).json({
+//     status: "success",
+//     data: messages,
+//   });
+// })
+
 exports.getPreviewMessages = asyncHandler(async (req, res, next) => {
   // How do I pick just the last message from receiver's messages
 
   const senderId = req.user._id;
   const conversations = await Conversation.find({
     participants: { $in: [senderId] },
-  }).populate("participants messages");
+  });
 
   res.status(200).json({
     status: "success",

@@ -18,6 +18,12 @@ router.get(
   userController.getAllOtherUsers
 );
 
+router.get(
+  "/search",
+  authController.protect,
+  userController.searchUserByNameAndEmail
+);
+
 router.patch(
   "/change-profile-photo",
   authController.protect,

@@ -6,10 +6,20 @@ const messageController = require("./../controllers/messageController");
 const router = express.Router();
 
 // router.get("/user", authController.protect, messageController.getChatMessages);
+router.get(
+  "/preview",
+  authController.protect,
+  messageController.getPreviewMessages
+);
+// router.get(
+//   "/:conversationId/conversation",
+//   authController.protect,
+//   messageController.getAllMessagesInConversation
+// );
 
 router
   .route("/")
-  .get(authController.protect, messageController.getPreviewMessages)
+  // .get(authController.protect, messageController.getAllMessagesInConversation)
   .post(authController.protect, messageController.sendMessage);
 
 router
